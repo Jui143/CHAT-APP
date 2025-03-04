@@ -1,0 +1,26 @@
+.BrandName1 {
+  color: rgb(99, 102, 241);
+}
+
+.navbar-brand:hover {
+  .BrandName1 {
+    color: white;
+  }
+  .BrandName2 {
+    color: rgb(99, 102, 241);
+  }
+}
+
+.navbar-brand {
+  font-size: x-large;
+}
+
+.opt {
+  color: rgb(99, 102, 241);
+  border-color: rgb(99, 102, 241);
+}
+
+.opt:hover {
+  color: rgb(99, 102, 241);
+  background-color: rgb(251, 251, 251);
+}

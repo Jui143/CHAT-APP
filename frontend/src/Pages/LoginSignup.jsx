@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import "../Styles/LoginSignup.css";
 import SignupNavbar from "../Components/SignupNavbar.jsx";
-// import Axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LoginSignup = () => {
   const [isSignUp, setIsSignUp] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const togglePanel = () => {
     setIsSignUp((prevIsSignUp) => !prevIsSignUp);
@@ -15,54 +16,67 @@ const LoginSignup = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [gender, setGender] = useState("Male");
+  const [username, setUsername] = useState("");
   const [email1, setEmail1] = useState("");
   const [password1, setPassword1] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
   const [signUpStatus, setSignUpStatus] = useState("");
 
-  const register = (e) => {};
-  //   e.preventDefault();
-  //   Axios.post("http://localhost:3001/register", {
-  //     email: email,
-  //     name: name,
-  //     mobile: mobile,
-  //     gender: gender,
-  //     password: password,
-  //   })
-  //     .then((response) => {
-  //       if (response.data.message) {
-  //         setSignUpStatus(response.data.message);
-  //       } else {
-  //         setSignUpStatus("Account Created Successfully!");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error during registration:", error);
-  //       setSignUpStatus("Error occurred during registration.");
-  //     });
-  // };
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const register = async (e) => {
+    e.preventDefault();
+    const dataResponse = await fetch(`${backendUrl}/api/signup`, {
+      method: "post",
+      headers: {
+        "Content-type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        name: name,
+        username: username,
+        email: email,
+        password: password,
+      }),
+    });
+    console.log("dataResponse", dataResponse);
+    const dataAPI = await dataResponse.json();
 
-  const login = (e) => {};
-  //   e.preventDefault();
-  //   Axios.post("http://localhost:3001/login", {
-  //     email: email1,
-  //     password: password1,
-  //   })
-  //     .then((response) => {
-  //       if (response.data.message) {
-  //         setLoginStatus(response.data.message);
-  //       } else {
-  //         setLoginStatus("Login successful!");
-  //         navigate(`/sizebasedcalc?loginStatus=${response.data[0].email}`);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error during login:", error);
-  //       setLoginStatus("An error occurred. Please try again later.");
-  //     });
-  // };
+    if (dataAPI.success) {
+      toast.success(dataAPI.message);
+      navigate("/loginsignup");
+    }
+    if (dataAPI.error) {
+      toast.error(dataAPI.message);
+    }
+  };
+
+  const login = async (e) => {
+    e.preventDefault();
+    const dataResponse = await fetch(`${backendUrl}/api/login`, {
+      method: "post",
+      credentials: "include",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email1,
+        password: password1,
+      }),
+    });
+
+    const dataAPI = await dataResponse.json();
+
+    if (dataAPI.success) {
+      toast.success(dataAPI.message);
+
+      navigate("/chat");
+      // fetchUserDetails();
+    }
+
+    if (dataAPI.error) {
+      toast.error(dataAPI.message);
+    }
+  };
 
   return (
     <>
@@ -75,7 +89,7 @@ const LoginSignup = () => {
         >
           {/* Sign Up Form */}
           <div className="form-container sign-up-container">
-            <form action="/" id="signupform" className="form">
+            <form id="signupform" className="form" onSubmit={register}>
               <h1>Create Account</h1>
               <input
                 type="text"
@@ -97,32 +111,14 @@ const LoginSignup = () => {
               />
               <input
                 type="text"
-                placeholder="Mobile Number*"
+                placeholder="Username*"
                 onChange={(e) => {
-                  setMobile(e.target.value);
+                  setUsername(e.target.value);
                 }}
                 required
                 className="ip"
               />
-              <div className="form-check form-check-inline d-flex align-items-evenly mt-2">
-                <input
-                  className="form-check-input me-2"
-                  onChange={(e) => setGender(e.target.value)}
-                  type="radio"
-                  name="gender"
-                  value="Male"
-                  checked
-                />
-                <label className="form-check-label me-5">Male</label>
-                <input
-                  className="form-check-input me-2"
-                  onChange={(e) => setGender(e.target.value)}
-                  type="radio"
-                  name="gender"
-                  value="Female"
-                />
-                <label className="form-check-label">Female</label>
-              </div>
+
               <input
                 type="password"
                 placeholder="Password*"
@@ -132,16 +128,14 @@ const LoginSignup = () => {
                 required
                 className="ip"
               />
-              <button className="button m-2" onClick={register}>
-                Sign Up
-              </button>
+              <button className="button m-2">Sign Up</button>
               <h5>{signUpStatus}</h5>
             </form>
           </div>
 
           {/* Login Form */}
           <div className="form-container sign-in-container">
-            <form action="/" className="form">
+            <form action="/" className="form" onSubmit={login}>
               <h1>Login</h1>
               <input
                 type="email"
@@ -164,9 +158,7 @@ const LoginSignup = () => {
               <a href="/" className="a">
                 Forgot your password?
               </a>
-              <button className="button" onClick={login}>
-                Login
-              </button>
+              <button className="button">Login</button>
               <h5>{loginStatus}</h5>
             </form>
           </div>

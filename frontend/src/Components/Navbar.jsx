@@ -1,12 +1,39 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "../store/userSlice";
 import { List, X } from "react-bootstrap-icons";
 import "../Styles/Navbar.css";
 import "../Styles/Sidebar.css"; // Ensure Sidebar styles are included
+import { toast } from "react-toastify";
+import { useAuth } from "../store/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const sidebarRef = useRef(null);
+  const { user, logout } = useAuth();
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/userLogout`, {
+        method: "get",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.success) {
+        logout(); // Update Context State
+        toast.success("Logged out successfully!");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Something went wrong!");
+    }
+  };
 
   // Close sidebar when clicking outside
   useEffect(() => {
@@ -19,7 +46,7 @@ export default function Navbar() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [sidebarRef]);
 
   return (
     <>
@@ -92,7 +119,7 @@ export default function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/loginsignup">
+              <Link to="/loginsignup" onClick={handleLogout}>
                 <button type="button" className="opt btn btn-outline-dark m-2">
                   Logout
                 </button>

@@ -14,7 +14,20 @@ export default function Chat() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+
+    const dataResponse = await fetch(`${backendUrl}/api/messages/send/:id`, {
+      method: "post",
+      credentials: "include",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email1,
+        password: password1,
+      }),
+    });
     if (input.trim() === "") return;
 
     // Add user message

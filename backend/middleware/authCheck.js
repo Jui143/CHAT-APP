@@ -25,7 +25,7 @@ async function authCheck(req, res, next) {
     }
 
     const user = await userModel.findById(decoded._id).select("-password");
-    console.log(user);
+    // console.log(user);
 
     if (!user) {
       return res.status(404).json({

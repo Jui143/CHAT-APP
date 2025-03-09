@@ -4,9 +4,11 @@ async function getUsersController(req, res) {
   try {
     const loggedInUserId = req.user._id;
 
-    const filteredUsers = await userModel.findOne({
-      _id: { $ne: loggedInUserId },
-    });
+    const filteredUsers = await userModel
+      .find({
+        _id: { $ne: loggedInUserId },
+      })
+      .select("-password");
 
     res.status(200).json({
       success: true,
